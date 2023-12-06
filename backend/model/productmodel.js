@@ -22,7 +22,7 @@ const ProductSchema = new Schema(
       type: Number,
       required: [true, "Unit Price is required"],
     },
-    categoryID: {
+    category_id: {
       type: String,
       required: [true, "Category ID is required"],
     },
