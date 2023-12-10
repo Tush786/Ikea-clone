@@ -1,16 +1,12 @@
 import React from 'react'
-import Home from './Home'
-import { Route, Routes } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
+import AdminPage from '../admin/AdminPage'
 
-
-function AllRoutes() {
+const AllRoutes = () => {
   return (
-    <div>
-         <Routes>
-        <Route path='/'element={<Home/>}/>
-        
+    <Routes>
+      <Route path='/admin' element={<AdminPage />}/>
     </Routes>
-    </div>
   )
 }
 
