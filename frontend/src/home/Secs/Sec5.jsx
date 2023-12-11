@@ -1,15 +1,14 @@
 import React from 'react'
-import SubSec2A from '../SubSecs/SubSec2A'
+import SubSec5A from '../SubSecs/SubSec5A'
 
-const Sec2 = () => {
+const Sec5 = () => {
   return (
     <div>
         <div className='px-16 mt-10'>
-        <SubSec2A/>
+        <SubSec5A/>
         </div>
-        
     </div>
   )
 }
 
-export default Sec2
+export default Sec5
