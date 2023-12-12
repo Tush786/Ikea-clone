@@ -8,9 +8,13 @@ function App() {
   return (
     <>
       <Navbar/>
+
       {/* <AllRoutes/> */}
       <Productpage/>
       <AdminPage />
+      <AllRoutes/>
+      {/* <AdminPage /> */}
+ 
     </>
   )
 }

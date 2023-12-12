@@ -1,3 +1,3 @@
-exports.getData=async(req,res)=>{
-    res.send({msg:"connection done"})
+exports.cartData=async(req,res)=>{
+    res.status(201).send({msg:`ghj`})
 }
