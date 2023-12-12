@@ -51,9 +51,6 @@ productRouter.post("/product/add", async (req, res) => {
       imagePath1,
       imagePath2,
       imagePath3,
-      imagePath1color,
-      imagePath2color,
-      imagePath3color,
       category_id,
       stock,
       rate: 0,
@@ -147,9 +144,6 @@ productRouter.patch("/product/update/:__id", async (req, res) => {
     imagePath1,
     imagePath2,
     imagePath3,
-    imagePath1color,
-    imagePath2color,
-    imagePath3color,
     hoverImge
   } = req.body;
 
@@ -165,9 +159,6 @@ productRouter.patch("/product/update/:__id", async (req, res) => {
         imagePath1,
         imagePath2,
         imagePath3,
-        imagePath1color,
-        imagePath2color,
-        imagePath3color,
         category_id,
         stock,
         hoverImge

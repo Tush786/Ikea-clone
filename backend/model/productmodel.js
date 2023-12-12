@@ -29,10 +29,6 @@ const ProductSchema = new Schema(
     imagePath1: { type: String, default: "" },
     imagePath2: { type: String, default: "" },
     imagePath3: { type: String, default: "" },
-    imagePath1color: { type: String, default: "" },
-    imagePath2color: { type: String, default: "" },
-    imagePath3color: { type: String, default: "" },
-    hoverImge: { type: String, default: "" },
     rateCount: { type: Number, default: 0 },  //  Total point product got from its ratings --> 3+2+4+5...
     rateTotal: { type: Number, default: 0 },  //  How many people rated --> If 5 people rated, this value is 5
     rate: { type: Number, default: 0 },       
