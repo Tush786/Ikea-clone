@@ -10,8 +10,8 @@ function App() {
       <Navbar/>
 
       {/* <AllRoutes/> */}
-      <Productpage/>
-      <AdminPage />
+      {/* <Productpage/> */}
+      {/* <AdminPage /> */}
       <AllRoutes/>
       {/* <AdminPage /> */}
  

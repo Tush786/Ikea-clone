@@ -106,8 +106,8 @@ function Productlist() {
   return (
     <Box display="grid" gridTemplateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} gap={2}>
     {
-      Prodarr?.map((elem, i) => {
-            return <Productcard key={i} elem={elem}  />
+      Prodarr?.map((elem, idx) => {
+            return <Productcard key={idx} elem={elem}  />
         })
     }
 </Box>
