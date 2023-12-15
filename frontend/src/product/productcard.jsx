@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import {Link} from "react-router-dom"
 // import HoverImage from 'react-hover-image/build'
 
+
 import {
   Box,
   Center,
@@ -17,9 +18,12 @@ function Productcard({elem}) {
 
   return (
  <div>
-  <div>
+ <Link to={`/product/${elem._id}`}>
+ <div>
     <img  src={elem. imagePath1} hoverSrc={elem.hoverImge} />
   </div>
+ </Link>
+ 
   <div>
     <p>{elem.productName}</p>
     <p>${elem.sellingPrice}</p>
