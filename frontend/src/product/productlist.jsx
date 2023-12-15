@@ -1,5 +1,5 @@
 import React from 'react'
-import Productcard from './Productcard'
+import Productcard from './productcard'
 import { Box } from '@chakra-ui/react'
 
 function Productlist() {
