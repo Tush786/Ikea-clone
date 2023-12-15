@@ -6,6 +6,7 @@ const AllRoutes = () => {
   return (
     <Routes>
       <Route path='/admin' element={<AdminPage />}/>
+      
     </Routes>
   )
 }
