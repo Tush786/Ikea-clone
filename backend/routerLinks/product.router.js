@@ -11,13 +11,12 @@ productRouter.post("/product/add", async (req, res) => {
     retailPrice,
     category_id,
     stock,
-    imagePath1,
-    imagePath2,
-    imagePath3,
+    imagesurl,
+    hoverimg,
+    colorShema,
     imagePath1color,
     imagePath2color,
     imagePath3color,
-    hoverImge
   } = req.body;
 
   if (
@@ -27,13 +26,12 @@ productRouter.post("/product/add", async (req, res) => {
       retailPrice==""||
       category_id==""||
       stock==""||
-      imagePath1==""||
-      imagePath2==""||
-      imagePath3==""||
+      imagesurl==""||
+      hoverimg==""||
+      colorShema==""||
       imagePath1color==""||
       imagePath2color==""||
-      imagePath3color==""||
-      hoverImge==""
+      imagePath3color==""
     
   ) {
     return res.status(401).send({
@@ -48,15 +46,14 @@ productRouter.post("/product/add", async (req, res) => {
       description,
       sellingPrice,
       retailPrice,
-      imagePath1,
-      imagePath2,
-      imagePath3,
+      imagesurl,
+      hoverimg,
       category_id,
       stock,
       rate: 0,
+      colorShema,
       rateCount: 0,
       rateTotal: 0,
-      hoverImge
     });
     await newProduct.save();
     res.status(200).send({ status: true, product: newProduct });
@@ -141,10 +138,9 @@ productRouter.patch("/product/update/:__id", async (req, res) => {
     retailPrice,
     category_id,
     stock,
-    imagePath1,
-    imagePath2,
-    imagePath3,
-    hoverImge
+    hoverimg,
+    colorShema,
+    imagesurl,
   } = req.body;
 
 
@@ -156,12 +152,11 @@ productRouter.patch("/product/update/:__id", async (req, res) => {
         description,
         sellingPrice,
         retailPrice,
-        imagePath1,
-        imagePath2,
-        imagePath3,
+        imagesurl,
+        hoverimg,
+        colorShema,
         category_id,
         stock,
-        hoverImge
       },
       { new: true }
     );
