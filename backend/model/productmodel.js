@@ -2,39 +2,63 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
+const specificationSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  value: {
+    type: String,
+    required: true,
+  },
+});
+
 const ProductSchema = new Schema(
   {
     productName: {
       type: String,
-      required: [true, "Product Name is required"],
+      required:true,
       trim: true,
     },
     description: {
       type: String,
-      required: [true, "Product Description is required"],
+      required: true,
       trim: true,
     },
     sellingPrice: {
       type: Number,
-      required: [true, "Unit Price is required"],
+      required: true,
     },
     retailPrice: {
       type: Number,
-      required: [true, "Unit Price is required"],
+      required: true,
     },
     category_id: {
       type: String,
-      required: [true, "Category ID is required"],
+      required: true,
     },
-    imagePath1: { type: String, default: "" },
-    imagePath2: { type: String, default: "" },
-    imagePath3: { type: String, default: "" },
-    imagePath1color: { type: String, default: "" },
-    imagePath2color: { type: String, default: "" },
-    imagePath3color: { type: String, default: "" },
-    hoverImge: { type: String, default: "" },
-    rateCount: { type: Number, default: 0 },  //  Total point product got from its ratings --> 3+2+4+5...
-    rateTotal: { type: Number, default: 0 },  //  How many people rated --> If 5 people rated, this value is 5
+    imagesurl:{
+      type:[String],
+      require: true,
+    },
+    hoverimg:{
+      type:String,
+      required:false
+    },
+    colorShema:{
+      type:[String],
+      require: false,
+    },
+    specifications: {
+      type: [specificationSchema], 
+      required: true,
+    },
+    rateComments: {
+      type: [String], 
+      default: [],
+    },
+    rateCount: { type: Number, default: 0 },  
+    rateTotal: { type: Number, default: 0 },  
     rate: { type: Number, default: 0 },       
     stock: {
       type: Number,
@@ -46,3 +70,59 @@ const ProductSchema = new Schema(
 
 const Product = mongoose.model("Product", ProductSchema);
 module.exports = {Product,ProductSchema};
+
+
+// Sample Data for Specification
+// "specifications": [
+//   {"name": "Size", "value": "Medium"},
+//   {"name": "Weight", "value": "1.5 kg"},
+//   {"name": "Material", "value": "Cotton"}
+// ]
+
+// Sample Data for Comment
+// {
+//   "productName": "Sample Product",
+//   "rateComments": ["Great product!", "Love the quality", "Highly recommended"]
+//   // ... other fields
+// }
+
+// <-------------Sample Data According to Schema ------------------------->
+
+// const sampleProduct = {
+//   productName: "Sample Product",
+//   description: "This is a sample product description.",
+//   sellingPrice: 29.99,
+//   retailPrice: 39.99,
+//   category_id: "123456", // Replace with an actual category ID
+//   imagesurl: [
+//     "https://example.com/image1.jpg",
+//     "https://example.com/image2.jpg",
+//     "https://example.com/image3.jpg",
+//   ],
+//   colorShema: ["Red", "Blue", "Green"],
+//   specifications: [
+//     { name: "Size", value: "Medium" },
+//     { name: "Weight", value: "1.5 kg" },
+//     { name: "Material", value: "Cotton" },
+//   ],
+//   rateComment: "This product is great!",
+//   rateCount: 5, // Assuming 5 people rated the product
+//   rateTotal: 18, // Total rating points received
+//   rate: 3.6, // Average rating (rateTotal / rateCount)
+//   stock: 50,
+// };
+
+// // Assuming you have a Mongoose model named Product
+// const Product = mongoose.model('Product', ProductSchema);
+
+// // Create a new product using the sample data
+// const newProduct = new Product(sampleProduct);
+
+// // Save the product to the database
+// newProduct.save()
+//   .then((result) => {
+//     console.log("Sample product created:", result);
+//   })
+//   .catch((error) => {
+//     console.error("Error creating sample product:", error);
+//   });
