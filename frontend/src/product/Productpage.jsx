@@ -1,5 +1,5 @@
 import React from 'react'
-import Productlist from './productlist'
+import Productlist from './Productlist'
 
 function Productpage() {
   return (
