@@ -1,6 +1,6 @@
-import React from "react";
-import Productcard from "./Productcard";
-import { Box, Button, Select } from "@chakra-ui/react";
+import React from 'react'
+import Productcard from './Productcard'
+import { Box ,Button, Select} from '@chakra-ui/react'
 
 function Productlist() {
   var Prodarr = [
