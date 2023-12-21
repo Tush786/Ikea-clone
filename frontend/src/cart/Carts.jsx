@@ -8,7 +8,7 @@ function Carts() {
   const navigate = useNavigate();
   const fetchData1 = async () => {
     const dataVal = await axios.get(`http://localhost:9090/cartpage/`);
-    setListData(dataVal.data.products);
+    setListData(dataVal.data.data);
   };
 
   const deleteData=async(id)=>{
@@ -18,7 +18,7 @@ function Carts() {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'id':id
+        'category_id':id
         
       },
     }).then(()=>fetchData1()).then(()=>{
@@ -36,7 +36,7 @@ function Carts() {
   const [pr, setPr] = useState(null);
 
   let totalPrice = 0;
-  for (let i = 0; i < listData.length; i++) {
+  for (let i = 0; i < listData?.length; i++) {
     totalPrice += listData[i].price;
   }
   const dataValue = (el) => {
@@ -54,7 +54,7 @@ function Carts() {
   };
 
   const removeData = (el) => {
- deleteData(el._id)
+ deleteData(el.category_id)
   };
 
   useEffect(() => {
