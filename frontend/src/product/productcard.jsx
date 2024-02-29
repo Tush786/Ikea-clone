@@ -14,7 +14,7 @@ import {
 
 function Productcard({elem}) {
   const [isHovered, setIsHovered] = useState(false);
-
+  console.log(isHovered)
   return (
  <div>
  <Link to={`/product/${elem._id}`}>
@@ -26,6 +26,7 @@ function Productcard({elem}) {
   <div>
     <p>{elem.productName}</p>
     <p>${elem.sellingPrice}</p>
+    
   </div>
  </div>
 

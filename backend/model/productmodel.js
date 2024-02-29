@@ -88,29 +88,29 @@ module.exports = {Product,ProductSchema};
 
 // <-------------Sample Data According to Schema ------------------------->
 
-// const sampleProduct = {
-//   productName: "Sample Product",
-//   description: "This is a sample product description.",
-//   sellingPrice: 29.99,
-//   retailPrice: 39.99,
-//   category_id: "123456", // Replace with an actual category ID
-//   imagesurl: [
-//     "https://example.com/image1.jpg",
-//     "https://example.com/image2.jpg",
-//     "https://example.com/image3.jpg",
-//   ],
-//   colorShema: ["Red", "Blue", "Green"],
-//   specifications: [
-//     { name: "Size", value: "Medium" },
-//     { name: "Weight", value: "1.5 kg" },
-//     { name: "Material", value: "Cotton" },
-//   ],
-//   rateComment: "This product is great!",
-//   rateCount: 5, // Assuming 5 people rated the product
-//   rateTotal: 18, // Total rating points received
-//   rate: 3.6, // Average rating (rateTotal / rateCount)
-//   stock: 50,
-// };
+const sampleProduct = {
+  productName: "Sample Product",
+  description: "This is a sample product description.",
+  sellingPrice: 29.99,
+  retailPrice: 39.99,
+  category_id: "123456", // Replace with an actual category ID
+  imagesurl: [
+    "https://example.com/image1.jpg",
+    "https://example.com/image2.jpg",
+    "https://example.com/image3.jpg",
+  ],
+  colorShema: ["Red", "Blue", "Green"],
+  specifications: [
+    { name: "Size", value: "Medium" },
+    { name: "Weight", value: "1.5 kg" },
+    { name: "Material", value: "Cotton" },
+  ],
+  rateComment: "This product is great!",
+  rateCount: 5, // Assuming 5 people rated the product
+  rateTotal: 18, // Total rating points received
+  rate: 3.6, // Average rating (rateTotal / rateCount)
+  stock: 50,
+};
 
 // // Assuming you have a Mongoose model named Product
 // const Product = mongoose.model('Product', ProductSchema);

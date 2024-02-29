@@ -12,34 +12,13 @@ productRouter.post("/product/add", async (req, res) => {
     category_id,
     stock,
     imagesurl,
-    hoverimg,
+    // hoverimg,
     colorShema,
-    imagePath1color,
-    imagePath2color,
-    imagePath3color,
+    specifications,
+    rateComments,
+    rateCount
   } = req.body;
 
-  if (
-      productName==""||
-      description==""||
-      sellingPrice==""||
-      retailPrice==""||
-      category_id==""||
-      stock==""||
-      imagesurl==""||
-      hoverimg==""||
-      colorShema==""||
-      imagePath1color==""||
-      imagePath2color==""||
-      imagePath3color==""
-    
-  ) {
-    return res.status(401).send({
-      status: false,
-      type: "INVAL_id",
-      error: "inval_id request body",
-    });
-  }
   try {
     const newProduct = new Product({
       productName,
@@ -47,12 +26,14 @@ productRouter.post("/product/add", async (req, res) => {
       sellingPrice,
       retailPrice,
       imagesurl,
-      hoverimg,
+      // hoverimg,
       category_id,
       stock,
       rate: 0,
       colorShema,
-      rateCount: 0,
+      specifications,
+      rateCount,
+      rateComments,
       rateTotal: 0,
     });
     await newProduct.save();
@@ -61,7 +42,7 @@ productRouter.post("/product/add", async (req, res) => {
     return res.status(401).send({
         status: false,
         type: "INVAL_id",
-        error: "inval_id request body",
+        error: error.message,
       });
   }  
 });
@@ -93,12 +74,64 @@ productRouter.delete("/product/:_id", async (req, res) => {
 // GET all products
 productRouter.get("/products", async (req, res) => {
   try {
-    const products = await Product.find({});
+
+    const {searchParam,category,rating,price}=req.query;
+    // const products=await Product.find({})
+   const filterobj={}
+   if(searchParam){
+    filterobj["productName"]={ $regex: new RegExp("^"+searchParam, 'i') }
+   }
+   if(category){
+    filterobj["category_id"]=category
+   }
+  //  if(rating){
+  //   filterobj["rateCount"]=rating
+  //  }
+  //  if(price){
+  //   filterobj["sellingPrice"]=rating
+  //  }
+  if(rating || price){
+    let sortObj ={};
+    if(rating){
+      if(rating=='asc'){
+        sortObj['rateCount'] = 1
+      }else{
+        sortObj['rateCount'] = -1
+      }
+    }
+    if(price){
+      if(price=='asc'){
+        sortObj['sellingPrice'] = 1
+      }else{
+        sortObj['sellingPrice'] = -1
+      }
+    }
+    const products = await Product.aggregate([
+      {
+        $match: filterobj
+      },
+      {
+        $sort: sortObj
+      },
+    ]);
+
+    // const products = await Product.find({});
+    return res.status(200).send({ status: true, products:products });
+  }
+    const products = await Product.aggregate([
+      {
+        $match: filterobj
+      },     
+    ]);
+
+    // const products = await Product.find({});
     return res.status(200).send({ status: true, products:products });
   } catch (error) {
+    console.log(error)
     return res
       .status(401)
       .send({ status: false, error });
+     
   }
 });
 
