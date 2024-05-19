@@ -1,9 +1,22 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
+
+const bcrypt = require("bcrypt");
+
+const cors = require("cors");
+const fs = require("fs");
+const { body, validationResult } = require("express-validator");
+const { uploadOnCloudinary } = require("../utils/cloudinary");
+const cloudinary = require("cloudinary").v2;
+require("dotenv").config();
+const multer = require("multer");
+
 const { Product } = require("../model/productmodel");
+const upload = multer({ dest: "uploads/" });
 
 const productRouter = express.Router();
 // Create Product
-productRouter.post("/product/add", async (req, res) => {
+productRouter.post("/product/add",upload.single("images"), async (req, res) => {
   const {
     productName,
     description,
@@ -11,7 +24,7 @@ productRouter.post("/product/add", async (req, res) => {
     retailPrice,
     category_id,
     stock,
-    imagesurl,
+    // imagesurl,
     // hoverimg,
     colorShema,
     specifications,
@@ -20,12 +33,22 @@ productRouter.post("/product/add", async (req, res) => {
   } = req.body;
 
   try {
+
+    const imagepath = req.file?.path;
+
+    if (!imagepath) {
+      return res.status(400).json({ error: "Image file is required" });
+    }
+
+    const imageSrc = await uploadOnCloudinary(imagepath);
+
+
     const newProduct = new Product({
       productName,
       description,
       sellingPrice,
       retailPrice,
-      imagesurl,
+      imagesurl:imageSrc.url || "",
       // hoverimg,
       category_id,
       stock,
