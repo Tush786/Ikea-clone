@@ -8,6 +8,7 @@ const {
 const {
     productRouter
 } = require("./routerLinks/product.router");
+const { UserRouter } = require("./routerLinks/userroute");
 require("dotenv").config();
 
 const app = express();
@@ -15,6 +16,8 @@ const app = express();
 app.use(express.json());
 app.use("", router);
 app.use("/productsapi", productRouter)
+app.use("/user", UserRouter)
+app.use("/cart", )
 
 app.listen(process.env.PORT, async () => {
     try {

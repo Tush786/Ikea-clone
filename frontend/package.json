@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@headlessui/react": "^1.7.19",
     "@reduxjs/toolkit": "^1.9.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -46,10 +47,10 @@
   },
   "devDependencies": {
     "@chakra-ui/react": "^2.8.2",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "axios": "^1.6.2",
-    "framer-motion": "^10.16.12",
+    "framer-motion": "^10.18.0",
     "react-router-dom": "^6.20.0",
     "react-scroll": "^1.9.0",
     "redux": "^4.2.1",
