@@ -6,11 +6,12 @@ const bcrypt = require("bcrypt");
 const cors = require("cors");
 const fs = require("fs");
 const { body, validationResult } = require("express-validator");
-const { uploadOnCloudinary } = require("../utils/cloudinary");
+
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
 const multer = require("multer");
 const { UserModel } = require("../model/usermodel");
+const { uploadOnCloudinary } = require("../Cloudinary/Cloudinary");
 const upload = multer({ dest: "uploads/" });
 
 //   --------------- User Validation ------------->
@@ -86,10 +87,11 @@ UserRouter.post("/signup", upload.single("avatar"), async (req, res) => {
       }
 
       console.log(req.body)
-      const { fullName, userName, email, password, avatar } = req.body;
+      const { fullName, userName, email, password} = req.body;
 
       // Check if avatar URL is provided
       const avatarLocalPath = req.file?.path;
+      console.log(avatarLocalPath)
       if (!avatarLocalPath) {
           throw new Error("Avatar URL is required");
       }
@@ -113,7 +115,7 @@ UserRouter.post("/signup", upload.single("avatar"), async (req, res) => {
               userName,
               email,
               password: hash,
-              avatar:avatarsrc.url
+              avatar:avatarsrc.url || ""
           });
 
           await new_user.save();

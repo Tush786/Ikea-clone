@@ -5,11 +5,11 @@ const Schema = mongoose.Schema;
 const specificationSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
   },
   value: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 
@@ -33,13 +33,10 @@ const ProductSchema = new Schema(
       type: Number,
       required: true,
     },
-    category_id: {
-      type: String,
-      required: true,
-    },
+    category_id: { type: Schema.Types.ObjectId, ref: 'Category',type:String, required: false },
     imagesurl:{
       type:[String],
-      require: true,
+      require: false,
     },
     hoverimg:{
       type:String,
@@ -51,7 +48,7 @@ const ProductSchema = new Schema(
     },
     specifications: {
       type: [specificationSchema], 
-      required: true,
+      required: false,
     },
     rateComments: {
       type: [String], 

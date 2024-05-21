@@ -6,69 +6,132 @@ const bcrypt = require("bcrypt");
 const cors = require("cors");
 const fs = require("fs");
 const { body, validationResult } = require("express-validator");
-const { uploadOnCloudinary } = require("../utils/cloudinary");
+
 const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
 const multer = require("multer");
 
 const { Product } = require("../model/productmodel");
-const upload = multer({ dest: "uploads/" });
+const { uploadOnCloudinary } = require("../Cloudinary/Cloudinary");
+const upload = require("../middlwere/Multer");
+// const upload = multer({ dest: "uploads/" });
 
 const productRouter = express.Router();
 // Create Product
-productRouter.post("/product/add",upload.single("images"), async (req, res) => {
-  const {
-    productName,
-    description,
-    sellingPrice,
-    retailPrice,
-    category_id,
-    stock,
-    // imagesurl,
-    // hoverimg,
-    colorShema,
-    specifications,
-    rateComments,
-    rateCount
-  } = req.body;
+// productRouter.post("/product/add",upload.single("images"), async (req, res) => {
+//   const {
+//     productName,
+//     description,
+//     sellingPrice,
+//     retailPrice,
+//     category_id,
+//     stock,
+//     // imagesurl,
+//     // hoverimg,
+//     colorShema,
+//     specifications,
+//     rateComments,
+//     rateCount
+//   } = req.body;
 
-  try {
+//   try {
 
-    const imagepath = req.file?.path;
+//     const imagepath = req.file?.path;
 
-    if (!imagepath) {
-      return res.status(400).json({ error: "Image file is required" });
+//     if (!imagepath) {
+//       return res.status(400).json({ error: "Image file is required" });
+//     }
+
+//     const imageSrc = await uploadOnCloudinary(imagepath);
+
+
+//     const newProduct = new Product({
+//       productName,
+//       description,
+//       sellingPrice,
+//       retailPrice,
+//       imagesurl:imageSrc.url || "",
+//       // hoverimg,
+//       category_id,
+//       stock,
+//       rate: 0,
+//       colorShema,
+//       specifications,
+//       rateCount,
+//       rateComments,
+//       rateTotal: 0,
+//     });
+//     await newProduct.save();
+//     res.status(200).send({ status: true, product: newProduct });
+//   } catch (error) {
+//     return res.status(401).send({
+//         status: false,
+//         type: "INVAL_id",
+//         error: error.message,
+//       });
+//   }  
+// });
+
+
+// ===========================================================> For multiple images ==================================>
+  productRouter.post("/add", upload, async (req, res) => {
+    const {
+        productName,
+        description,
+        sellingPrice,
+        retailPrice,
+        category_id,
+        stock,
+        colorShema,
+        specifications,
+        rateComments,
+        rateCount
+    } = req.body;
+
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: "Image files are required" });
+        }
+
+        const imageUploadPromises = req.files.map(file => uploadOnCloudinary(file.path));
+        const imageUploadResults = await Promise.all(imageUploadPromises);
+
+        // Filter out any failed uploads
+        const imageUrls = imageUploadResults.filter(result => result).map(result => result.url);
+
+        if (imageUrls.length === 0) {
+            return res.status(400).json({ error: "Failed to upload images" });
+        }
+
+        const newProduct = new Product({
+            productName,
+            description,
+            sellingPrice,
+            retailPrice,
+            imagesurl: imageUrls, // Save the array of image URLs
+            category_id,
+            stock,
+            rate: 0,
+            colorShema:["#3a4b66","#a3a2a1","#8b3b35","#e3d8c4","#7e8468"],
+            specifications,
+            rateCount,
+            rateComments,
+            rateTotal: 0,
+        });
+
+        await newProduct.save();
+        res.status(200).send({ status: true, product: newProduct });
+    } catch (error) {
+        return res.status(401).send({
+            status: false,
+            type: "INVAL_id",
+            error: error.message,
+        });
     }
-
-    const imageSrc = await uploadOnCloudinary(imagepath);
-
-
-    const newProduct = new Product({
-      productName,
-      description,
-      sellingPrice,
-      retailPrice,
-      imagesurl:imageSrc.url || "",
-      // hoverimg,
-      category_id,
-      stock,
-      rate: 0,
-      colorShema,
-      specifications,
-      rateCount,
-      rateComments,
-      rateTotal: 0,
-    });
-    await newProduct.save();
-    res.status(200).send({ status: true, product: newProduct });
-  } catch (error) {
-    return res.status(401).send({
-        status: false,
-        type: "INVAL_id",
-        error: error.message,
-      });
-  }  
 });
+
+
+
 
 // DELETE products.
 productRouter.delete("/product/:_id", async (req, res) => {
