@@ -224,6 +224,7 @@ productRouter.get("/products", async (req, res) => {
 // GET a product
 productRouter.get("/product/:_id", async (req, res) => {
   const { _id } = req.params;
+  // console.log(_id)
 
   if (!_id) {
     return res.status(401).send({
@@ -234,7 +235,7 @@ productRouter.get("/product/:_id", async (req, res) => {
   }
 
   try {
-    let product = await Product.findBy_id(_id); //Pass the _id of the product that is wanted
+    let product = await Product.findOne({_id}); //Pass the _id of the product that is wanted
     if (!product) {
       throw Error(`no product found ${_id}`);
     }
