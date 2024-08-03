@@ -17,61 +17,6 @@ const upload = require("../middlwere/Multer");
 // const upload = multer({ dest: "uploads/" });
 
 const productRouter = express.Router();
-// Create Product
-// productRouter.post("/product/add",upload.single("images"), async (req, res) => {
-//   const {
-//     productName,
-//     description,
-//     sellingPrice,
-//     retailPrice,
-//     category_id,
-//     stock,
-//     // imagesurl,
-//     // hoverimg,
-//     colorShema,
-//     specifications,
-//     rateComments,
-//     rateCount
-//   } = req.body;
-
-//   try {
-
-//     const imagepath = req.file?.path;
-
-//     if (!imagepath) {
-//       return res.status(400).json({ error: "Image file is required" });
-//     }
-
-//     const imageSrc = await uploadOnCloudinary(imagepath);
-
-
-//     const newProduct = new Product({
-//       productName,
-//       description,
-//       sellingPrice,
-//       retailPrice,
-//       imagesurl:imageSrc.url || "",
-//       // hoverimg,
-//       category_id,
-//       stock,
-//       rate: 0,
-//       colorShema,
-//       specifications,
-//       rateCount,
-//       rateComments,
-//       rateTotal: 0,
-//     });
-//     await newProduct.save();
-//     res.status(200).send({ status: true, product: newProduct });
-//   } catch (error) {
-//     return res.status(401).send({
-//         status: false,
-//         type: "INVAL_id",
-//         error: error.message,
-//       });
-//   }  
-// });
-
 
 // ===========================================================> For multiple images ==================================>
   productRouter.post("/add", upload, async (req, res) => {
@@ -157,75 +102,62 @@ productRouter.delete("/product/:_id", async (req, res) => {
   }
 });
 
-// GET all products
+// GET all products with pagination
+
 productRouter.get("/products", async (req, res) => {
   try {
+    const { searchParam, category, rating, price, page = 1, limit = 6 } = req.query;
 
-    const {searchParam,category,rating,price}=req.query;
-    // const products=await Product.find({})
-   const filterobj={}
-   if(searchParam){
-    filterobj["productName"]={ $regex: new RegExp("^"+searchParam, 'i') }
-   }
-   if(category){
-    filterobj["category_id"]=category
-   }
-  //  if(rating){
-  //   filterobj["rateCount"]=rating
-  //  }
-  //  if(price){
-  //   filterobj["sellingPrice"]=rating
-  //  }
-  if(rating || price){
-    let sortObj ={};
-    if(rating){
-      if(rating=='asc'){
-        sortObj['rateCount'] = 1
-      }else{
-        sortObj['rateCount'] = -1
-      }
+    const filterobj = {};
+    if (searchParam) {
+      filterobj["productName"] = { $regex: new RegExp("^" + searchParam, 'i') };
     }
-    if(price){
-      if(price=='asc'){
-        sortObj['sellingPrice'] = 1
-      }else{
-        sortObj['sellingPrice'] = -1
-      }
+    if (category) {
+      filterobj["category_id"] = category;
     }
-    const products = await Product.aggregate([
-      {
-        $match: filterobj
-      },
-      {
-        $sort: sortObj
-      },
-    ]);
 
-    // const products = await Product.find({});
-    return res.status(200).send({ status: true, products:products });
-  }
-    const products = await Product.aggregate([
-      {
-        $match: filterobj
-      },     
-    ]);
+    let sortObj = {};
+    if (rating) {
+      sortObj['rateCount'] = rating === 'asc' ? 1 : -1;
+    }
+    if (price) {
+      sortObj['sellingPrice'] = price === 'asc' ? 1 : -1;
+    }
 
-    // const products = await Product.find({});
-    return res.status(200).send({ status: true, products:products });
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Logging the filter and sort objects for debugging
+    console.log("Filter Object:", filterobj);
+    console.log("Sort Object:", sortObj);
+
+    // Build the aggregation pipeline
+    const pipeline = [
+      { $match: filterobj },
+      ...(Object.keys(sortObj).length > 0 ? [{ $sort: sortObj }] : []),
+      { $skip: skip },
+      { $limit: parseInt(limit) }
+    ];
+
+    // Logging the pipeline for debugging
+    console.log("Aggregation Pipeline:", JSON.stringify(pipeline, null, 2));
+
+    const products = await Product.aggregate(pipeline);
+    const totalProducts = await Product.countDocuments(filterobj);
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    return res.status(200).send({ status: true, products, totalPages, currentPage: page });
   } catch (error) {
-    console.log(error)
-    return res
-      .status(401)
-      .send({ status: false, error });
-     
+    console.log(error);
+    return res.status(401).send({ status: false, error });
   }
 });
+
+
 
 // GET a product
 productRouter.get("/product/:_id", async (req, res) => {
   const { _id } = req.params;
   // console.log(_id)
-
   if (!_id) {
     return res.status(401).send({
       status: false,

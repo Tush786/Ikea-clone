@@ -80,71 +80,10 @@ UserRouter.patch("/avatar/:id", upload.single("avatar"), async (req, res) => {
 });
 
 
-// UserRouter.post("/signup", upload.single("avatar"), async (req, res) => {
-//   try {
-//       const errors = validationResult(req);
-//       if (!errors.isEmpty()) {
-//           return res.status(400).json({ errors: errors.array() });
-//       }
-
-//       console.log(req.body)
-//       const { fullName, userName, email, password} = req.body;
-
-//       // Check if avatar URL is provided
-//       const avatarLocalPath = req.file?.path;
-//       console.log(avatarLocalPath)
-//       // if (!avatarLocalPath) {
-//       //     throw new Error("Avatar URL is required");
-//       // }
-
-//       const userPresent = await UserModel.findOne({ email });
-//       // const avatarsrc = await uploadOnCloudinary(avatarLocalPath);
-
-//       if (userPresent) {
-//           return res.status(409).send("Email already exists in database");
-//       }
-
-//       // Hash the password
-//       bcrypt.hash(password, 4, async function (err, hash) {
-//           if (err) {
-//               console.error("Error hashing password:", err);
-//               return res.status(500).send("Internal Server Error");
-//           }
-//           // Create a new user instance with avatar URL
-//           const new_user = await UserModel({
-//               fullName,
-//               userName,
-//               email,
-//               password: hash,
-              // avatar:avatarsrc.url || ""
-//           });
-
-//           await new_user.save();
-//           res.status(200).send({
-//               msg: "User Added Successfully",
-//           });
-//       });
-//   } catch (error) {
-//       console.error("Error in signup:", error);
-//       return res.status(500).send("Internal Server Error");
-//   }
-// });
-
-
-
-
-
-
-
-
-
-
-
-
 UserRouter.post("/signup",upload.single("avatar"), async (req, res) => {
   try {
     const {
-      userName,
+      phonenumber,
       fullName,
       email,
       password
@@ -168,7 +107,7 @@ UserRouter.post("/signup",upload.single("avatar"), async (req, res) => {
     } else {
       bcrypt.hash(password, 4, async function (err, hash) {
         const new_user = await new UserModel({
-          userName,
+          phonenumber,
           email,
           password: hash,
           fullName,
@@ -191,41 +130,104 @@ UserRouter.post("/signup",upload.single("avatar"), async (req, res) => {
 
 
 // <-------------- Login ------------>
+// UserRouter.post("/login", async (req, res) => {
+//   try {
+//     const {email} = req.body
+//     let user_present = await UserModel.findOne({
+//       email,
+//     });
+
+//     if (req.body.gauth) {
+//       console.log(req.body)
+//       if (!user_present) {
+//           const {fullName,profilePic} = req.body
+//           user_present = await new UserModel({
+//            fullName,
+//             email,
+//             avatar:profilePic,
+//             referalCode: referralCodeGenerator.alpha("lowercase", 12),
+//           });
+//           await user_present.save();
+//       }
+//       res.status(201).send({
+//         user: user_present,
+//         msg: "Google Login Successfull"
+//       });
+//     } else {
+//       if (!user_present) {
+//         res.status(409).send("Email Does not exist!");
+//       } else if (user_present) {
+//         const hash_pass = await user_present.password;
+//         const Result = bcrypt.compareSync(req.body.password, hash_pass); // true
+//         if (!Result) {
+//           res.status(410).send("Password Does not match");
+//         } else {
+//           res.status(200).send({
+//             user: user_present,
+//             msg: "Login successfull"
+//           });
+//         }
+//       }
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
+
+
 UserRouter.post("/login", async (req, res) => {
   try {
-    const {email} = req.body
+    const { email } = req.body;
     let user_present = await UserModel.findOne({
       email,
     });
 
     if (req.body.gauth) {
-      console.log(req.body)
+      console.log(req.body);
       if (!user_present) {
-          const {fullName,profilePic} = req.body
-          user_present = await new UserModel({
-           fullName,
-            email,
-            avatar:profilePic,
-            referalCode: referralCodeGenerator.alpha("lowercase", 12),
-          });
-          await user_present.save();
+        const { fullName, profilePic } = req.body;
+        user_present = new UserModel({
+          fullName,
+          email,
+          avatar: profilePic,
+          referalCode: referralCodeGenerator.alpha("lowercase", 12),
+        });
+        await user_present.save();
       }
+
+      const token = jwt.sign(
+        { userId: user_present._id },
+        process.env.SECRET_KEY,
+        { expiresIn: '1h' } // Adjust token expiration as needed
+      );
+
+      console.log(token)
       res.status(201).send({
         user: user_present,
-        msg: "Google Login Successfull"
+        token,
+        msg: "Google Login Successful"
       });
     } else {
       if (!user_present) {
         res.status(409).send("Email Does not exist!");
       } else if (user_present) {
         const hash_pass = await user_present.password;
-        const Result = bcrypt.compareSync(req.body.password, hash_pass); // true
-        if (!Result) {
+        const result = bcrypt.compareSync(req.body.password, hash_pass);
+
+        if (!result) {
           res.status(410).send("Password Does not match");
         } else {
+          const token = jwt.sign(
+            { userId: user_present._id },
+            process.env.SECRET_KEY,
+            { expiresIn: '1h' } // Adjust token expiration as needed
+          );
+
           res.status(200).send({
             user: user_present,
-            msg: "Login successfull"
+            token,
+            msg: "Login successful"
           });
         }
       }
@@ -235,6 +237,7 @@ UserRouter.post("/login", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 
 UserRouter.patch("/editUser/:id", async (req, res) => {

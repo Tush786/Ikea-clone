@@ -3,27 +3,31 @@ const {
     connection
 } = require("./config/connection");
 const {
-    router
-} = require("./routerLinks/router");
-const {
     productRouter
-} = require("./routerLinks/product.router");
+} = require("./routerLinks/product.route");
 const { UserRouter } = require("./routerLinks/userroute");
 const { Authentication } = require("./middlwere/Authentication");
 const { Forgetpassrouter } = require("./routerLinks/Forgetpassword");
 const { Cartrouter } = require("./routerLinks/Cartrouter");
+const { Addressroute } = require("./routerLinks/address.route");
+const cors = require("cors");
+
 
 require("dotenv").config();
-
 const app = express();
+app.use(
+    cors({
+      origin: "*",
+    })
+  );
 
 app.use(express.json());
-app.use("", router);
+
 app.use("/productsapi", productRouter)
 app.use("/user", UserRouter)
 app.use('/cart',Authentication,Cartrouter)
-
 app.use('/pass',Forgetpassrouter)
+app.use('/address',Addressroute)
 
 app.listen(process.env.PORT, async () => {
     try {
