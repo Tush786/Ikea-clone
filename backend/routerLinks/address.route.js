@@ -42,6 +42,8 @@ Addressroute.post("/add", async (req, res) => {
   
       if (existingAddress) {
         // Owner exists, update the addressItems array
+        existingAddress.addressItems.forEach(item => item.ActiveAddress = false);
+
         existingAddress.addressItems.push(...addressItems);
         await existingAddress.save();
         return res.status(200).send({ status: true, address: existingAddress });
@@ -63,14 +65,68 @@ Addressroute.post("/add", async (req, res) => {
     }
   });
 
-// Edit address route
+// Edit Activeaddress route
+Addressroute.put("/activeAddress/:owner/:addressId", async (req, res) => {
+  const { owner, addressId } = req.params;
+   console.log(owner,addressId)
+  try {
+    await Address_model.updateMany(
+      { owner: owner },
+      { $set: { "addressItems.$[].ActiveAddress": false } }
+    );
+
+    // Then, set the specific address to active
+    const updatedDocument = await Address_model.findOneAndUpdate(
+      { owner: owner, "addressItems._id": addressId },
+      { $set: { "addressItems.$.ActiveAddress": true } },
+      { new: true }
+    );
+
+    if (!updatedDocument) {
+      return res.status(404).send({
+        status: false,
+        type: "NOT_FOUND",
+        error: "Address not found for the specified owner or address item.",
+      });
+    }
+
+    return res.status(200).send({ status: true, address: updatedDocument });
+  } catch (error) {
+    return res.status(500).send({
+      status: false,
+      type: "SERVER_ERROR",
+      error: error.message,
+    });
+  }
+});
+
+
+// Edit Address Route
 Addressroute.put("/edit/:owner/:addressId", async (req, res) => {
   const { owner, addressId } = req.params;
-  const {updatedAddressItem} = req.body;
- console.log(updatedAddressItem)
+  let { updatedAddressItem } = req.body;
+
   try {
-    // Find the address document by owner ID and update the specific address item
-    const addressDocument = await Address_model.findOneAndUpdate(
+    // Retrieve the existing address document to get the current ActiveAddress status
+    const addressDocument = await Address_model.findOne(
+      { owner: owner, "addressItems._id": addressId },
+      { "addressItems.$": 1 } // Select only the relevant address item
+    );
+
+    if (!addressDocument || addressDocument.addressItems.length === 0) {
+      return res.status(404).send({
+        status: false,
+        type: "NOT_FOUND",
+        error: "Address not found for the specified owner or address item.",
+      });
+    }
+
+    // Preserve the existing ActiveAddress status
+    const currentActiveStatus = addressDocument.addressItems[0].ActiveAddress;
+    updatedAddressItem.ActiveAddress = currentActiveStatus;
+
+    // Update the specific address item without changing the ActiveAddress field
+    const updatedDocument = await Address_model.findOneAndUpdate(
       { owner: owner, "addressItems._id": addressId },
       {
         $set: {
@@ -80,8 +136,7 @@ Addressroute.put("/edit/:owner/:addressId", async (req, res) => {
       { new: true }
     );
 
-    console.log(addressDocument)
-    if (!addressDocument) {
+    if (!updatedDocument) {
       return res.status(404).send({
         status: false,
         type: "NOT_FOUND",
@@ -89,7 +144,7 @@ Addressroute.put("/edit/:owner/:addressId", async (req, res) => {
       });
     }
 
-    return res.status(200).send({ status: true, address: addressDocument });
+    return res.status(200).send({ status: true, address: updatedDocument });
   } catch (error) {
     return res.status(500).send({
       status: false,

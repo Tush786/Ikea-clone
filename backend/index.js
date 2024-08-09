@@ -25,7 +25,7 @@ app.use(express.json());
 
 app.use("/productsapi", productRouter)
 app.use("/user", UserRouter)
-app.use('/cart',Authentication,Cartrouter)
+app.use('/cart',Cartrouter)
 app.use('/pass',Forgetpassrouter)
 app.use('/address',Addressroute)
 

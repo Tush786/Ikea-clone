@@ -1,17 +1,17 @@
 const express = require("express");
 const { Cart_model } = require("../model/cartmodel");
 const { Product } = require("../model/productmodel");
-
+const mongoose=require('mongoose');
 
 
 require("dotenv").config();
 
 const Cartrouter = express.Router();
 
-Cartrouter.get("/get", async (req, res) => {
-  const { owner } = req.body;
+Cartrouter.get("/get/:owner", async (req, res) => {
+  const { owner } = req.params;
   try {
-    // console.log(req);
+  
     const data = await Cart_model.find({ owner });
     res.status(200).send(data);
   } catch (error) {
@@ -19,18 +19,18 @@ Cartrouter.get("/get", async (req, res) => {
   }
 });
 
-Cartrouter.post("/create", async (req, res) => {
-  const { product, quantity, owner, id } = req.body;
+Cartrouter.post("/create/:id", async (req, res) => {
+  const { product, quantity, owner} = req.body;
+  const {id}=req.params;
   try {
     let cart = await Cart_model.findOne({ owner });
-    console.log(cart);
+
 
     if (!cart) {
       cart = new Cart_model({ owner, orderItems: [] });
       await cart.save();
     }
-    console.log(id);
-    console.log(quantity);
+  
     if (quantity <= 0) {
       cart.orderItems = cart.orderItems.filter(
         (item) => item._id.toString() !== id.toString()
@@ -38,13 +38,6 @@ Cartrouter.post("/create", async (req, res) => {
       await cart.save();
     }
 
-    let productdata = await Product.findById(product._id);
-    console.log(productdata);
-    if (!productdata) {
-      return res.status(404).json({ msg: "Product not found" });
-    }
-
-    // Check if the product is already in the cart
     let existingItem = cart.orderItems.find(
       (item) => item.product._id.toString() === product._id.toString()
     );
@@ -57,7 +50,7 @@ Cartrouter.post("/create", async (req, res) => {
       );
     } else {
       // If the product is not in the cart, add it as a new item
-      const newItem = { product: productdata, quantity };
+      const newItem = { product: product, quantity };
 
       cart.orderItems.unshift(newItem);
     }
@@ -70,38 +63,38 @@ Cartrouter.post("/create", async (req, res) => {
   }
 });
 
-Cartrouter.delete("/delete/:id", async (req, res) => {
-  const { id } = req.params;
-  const { owner } = req.body;
-  
+Cartrouter.delete("/delete/:owner/:productId", async (req, res) => {
+  const { owner, productId } = req.params;
+  console.log(owner, productId);
+
   try {
-    // Find the cart by owner
-    let cart = await Cart_model.findOne({ owner });
-    
-    console.log(id)
-    if (!cart) {
-      return res.status(404).json({ msg: "Cart not found" });
-    }
-
-    // Delete the cart item by its ID
-    // const cartUpdate = await Cart_model.findByIdAndDelete({_id:id});
-    cart.orderItems = cart.orderItems.filter(
-      (item) => item._id.toString() !== id.toString()
+    const cartDocument = await Cart_model.findOneAndUpdate(
+      { owner: owner },
+      {
+        $pull: {
+          orderItems: { 'product._id': productId }
+        }
+      },
+      { new: true }
     );
-    await cart.save();
 
-    if (!cartUpdate) {
-      return res.status(404).json({ msg: "Cart item not found" });
+    if (!cartDocument) {
+      return res.status(404).send({
+        status: false,
+        type: "NOT_FOUND",
+        error: "Product not found for the specified owner.",
+      });
     }
 
-    res.json(cart);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
+    return res.status(200).send({ status: true, cart: cartDocument });
+  } catch (error) {
+    return res.status(500).send({
+      status: false,
+      type: "SERVER_ERROR",
+      error: error.message,
+    });
   }
 });
-
-
 
 module.exports = {
   Cartrouter,
