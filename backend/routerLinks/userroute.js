@@ -199,7 +199,6 @@ UserRouter.post("/login", async (req, res) => {
       const token = jwt.sign(
         { userId: user_present._id },
         process.env.SECRET_KEY,
-        { expiresIn: '1h' } // Adjust token expiration as needed
       );
 
       console.log(token)
@@ -221,7 +220,6 @@ UserRouter.post("/login", async (req, res) => {
           const token = jwt.sign(
             { userId: user_present._id },
             process.env.SECRET_KEY,
-            { expiresIn: '1h' } // Adjust token expiration as needed
           );
 
           res.status(200).send({

@@ -4,12 +4,12 @@ const { Address_model } = require("../model/addressmodel");
 require("dotenv").config();
 const Addressroute = express.Router();
 
-Addressroute.get("/get/:owner", async (req, res) => {
-  const {owner}=req.params
-  console.log(owner)
+Addressroute.get("/get", async (req, res) => {
+  const {owner}=req.body
+  // console.log(owner,"line no 9")
   try {
     const data = await Address_model.find({owner});
-    console.log(data)
+    // console.log(data)
     if (data) {
       return res.status(200).send({ message: "User addresses retrieved successfully", data });
     } else {
@@ -24,9 +24,6 @@ Addressroute.get("/get/:owner", async (req, res) => {
 
 Addressroute.post("/add", async (req, res) => {
     const { owner, addressItems } = req.body;
-    console.log(owner)
-    console.log(addressItems);
-  
     // Validate required fields
     if (!owner || !addressItems || !Array.isArray(addressItems) || addressItems.length === 0) {
       return res.status(400).send({
@@ -66,16 +63,16 @@ Addressroute.post("/add", async (req, res) => {
   });
 
 // Edit Activeaddress route
-Addressroute.put("/activeAddress/:owner/:addressId", async (req, res) => {
-  const { owner, addressId } = req.params;
-   console.log(owner,addressId)
+Addressroute.put("/activeAddress/:addressId", async (req, res) => {
+  const { addressId } = req.params;
+  const { owner} = req.body;
+   console.log("line no 69",owner,addressId)
   try {
     await Address_model.updateMany(
       { owner: owner },
       { $set: { "addressItems.$[].ActiveAddress": false } }
     );
 
-    // Then, set the specific address to active
     const updatedDocument = await Address_model.findOneAndUpdate(
       { owner: owner, "addressItems._id": addressId },
       { $set: { "addressItems.$.ActiveAddress": true } },
@@ -101,16 +98,27 @@ Addressroute.put("/activeAddress/:owner/:addressId", async (req, res) => {
 });
 
 
-// Edit Address Route
-Addressroute.put("/edit/:owner/:addressId", async (req, res) => {
-  const { owner, addressId } = req.params;
-  let { updatedAddressItem } = req.body;
-
+Addressroute.put("/edit/:addressId", async (req, res) => {
+  const { addressId } = req.params;
+  const { owner } = req.body;
+  const updatedAddressItem={
+       Name: req.body.Name,
+       City:req.body.City,
+        State:req.body. State,
+       PinCode:req.body.PinCode,
+       Locality:req.body.Locality,
+       Landmark:req.body.Landmark,
+        AddressType:req.body. AddressType,
+        Address:req.body. Address,
+       ActiveAddress:req.body.ActiveAddress,
+       ActiveAddress:req.body.ActiveAddress,
+       MobileNumber:req.body.MobileNumber,
+  }
+  console.log(updatedAddressItem)
   try {
-    // Retrieve the existing address document to get the current ActiveAddress status
     const addressDocument = await Address_model.findOne(
       { owner: owner, "addressItems._id": addressId },
-      { "addressItems.$": 1 } // Select only the relevant address item
+      { "addressItems.$": 1 } 
     );
 
     if (!addressDocument || addressDocument.addressItems.length === 0) {
@@ -121,11 +129,9 @@ Addressroute.put("/edit/:owner/:addressId", async (req, res) => {
       });
     }
 
-    // Preserve the existing ActiveAddress status
     const currentActiveStatus = addressDocument.addressItems[0].ActiveAddress;
     updatedAddressItem.ActiveAddress = currentActiveStatus;
 
-    // Update the specific address item without changing the ActiveAddress field
     const updatedDocument = await Address_model.findOneAndUpdate(
       { owner: owner, "addressItems._id": addressId },
       {
@@ -156,9 +162,9 @@ Addressroute.put("/edit/:owner/:addressId", async (req, res) => {
 
 
 // Delete Address from Database
-Addressroute.delete("/delete/:owner/:addressId", async (req, res) => {
-  const { owner, addressId } = req.params;
-
+Addressroute.delete("/delete/:addressId", async (req, res) => {
+  const {  addressId } = req.params;
+  const { owner} = req.body;
   try {
     const addressDocument = await Address_model.findOneAndUpdate(
       { owner: owner },

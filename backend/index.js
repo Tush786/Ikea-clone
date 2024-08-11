@@ -25,9 +25,9 @@ app.use(express.json());
 
 app.use("/productsapi", productRouter)
 app.use("/user", UserRouter)
-app.use('/cart',Cartrouter)
+app.use('/cart',Authentication,Cartrouter)
 app.use('/pass',Forgetpassrouter)
-app.use('/address',Addressroute)
+app.use('/address',Authentication,Addressroute)
 
 app.listen(process.env.PORT, async () => {
     try {

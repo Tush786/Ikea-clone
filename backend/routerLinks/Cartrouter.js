@@ -8,10 +8,10 @@ require("dotenv").config();
 
 const Cartrouter = express.Router();
 
-Cartrouter.get("/get/:owner", async (req, res) => {
-  const { owner } = req.params;
+Cartrouter.get("/get", async (req, res) => {
+  // const { owner } = req.params;
+  const {owner} =req.body;
   try {
-  
     const data = await Cart_model.find({ owner });
     res.status(200).send(data);
   } catch (error) {
@@ -21,6 +21,7 @@ Cartrouter.get("/get/:owner", async (req, res) => {
 
 Cartrouter.post("/create/:id", async (req, res) => {
   const { product, quantity, owner} = req.body;
+  // console.log("line no 24",owner)
   const {id}=req.params;
   try {
     let cart = await Cart_model.findOne({ owner });
@@ -63,10 +64,9 @@ Cartrouter.post("/create/:id", async (req, res) => {
   }
 });
 
-Cartrouter.delete("/delete/:owner/:productId", async (req, res) => {
-  const { owner, productId } = req.params;
-  console.log(owner, productId);
-
+Cartrouter.delete("/delete/:productId", async (req, res) => {
+  const { productId } = req.params;
+  const {owner} =req.body;
   try {
     const cartDocument = await Cart_model.findOneAndUpdate(
       { owner: owner },
