@@ -49,7 +49,6 @@ UserRouter.get("/:_id", async (req, res) => {
   }
 });
 
-
 UserRouter.patch("/avatar/:id", upload.single("avatar"), async (req, res) => {
   try {
     const userId = req.params.id;
@@ -72,31 +71,27 @@ UserRouter.patch("/avatar/:id", upload.single("avatar"), async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json({ message: "Avatar updated successfully", user: updatedUser });
+    res
+      .status(200)
+      .json({ message: "Avatar updated successfully", user: updatedUser });
   } catch (error) {
     console.error("Error updating avatar:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-
-UserRouter.post("/signup",upload.single("avatar"), async (req, res) => {
+UserRouter.post("/signup", upload.single("avatar"), async (req, res) => {
   try {
-    const {
-      phonenumber,
-      fullName,
-      email,
-      password
-    } = req.body;
+    const { phonenumber, fullName, email, password } = req.body;
 
     // const avatarLocalPath = req.file?.path;
     //       console.log(avatarLocalPath)
     //       if (!avatarLocalPath) {
     //           throw new Error("Avatar URL is required");
     //       }
-    
-          const userPresent = await UserModel.findOne({ email });
-          // const avatarsrc = await uploadOnCloudinary(avatarLocalPath);
+
+    const userPresent = await UserModel.findOne({ email });
+    // const avatarsrc = await uploadOnCloudinary(avatarLocalPath);
 
     const user_present = await UserModel.findOne({
       email,
@@ -127,7 +122,6 @@ UserRouter.post("/signup",upload.single("avatar"), async (req, res) => {
 });
 
 // ==================================== For Cloudinary Purpose ===================>
-
 
 // <-------------- Login ------------>
 // UserRouter.post("/login", async (req, res) => {
@@ -175,7 +169,6 @@ UserRouter.post("/signup",upload.single("avatar"), async (req, res) => {
 //   }
 // });
 
-
 UserRouter.post("/login", async (req, res) => {
   try {
     const { email } = req.body;
@@ -198,14 +191,14 @@ UserRouter.post("/login", async (req, res) => {
 
       const token = jwt.sign(
         { userId: user_present._id },
-        process.env.SECRET_KEY,
+        process.env.SECRET_KEY
       );
 
-      console.log(token)
+      console.log(token);
       res.status(201).send({
         user: user_present,
         token,
-        msg: "Google Login Successful"
+        msg: "Google Login Successful",
       });
     } else {
       if (!user_present) {
@@ -219,13 +212,13 @@ UserRouter.post("/login", async (req, res) => {
         } else {
           const token = jwt.sign(
             { userId: user_present._id },
-            process.env.SECRET_KEY,
+            process.env.SECRET_KEY
           );
 
           res.status(200).send({
             user: user_present,
             token,
-            msg: "Login successful"
+            msg: "Login successful",
           });
         }
       }
@@ -236,8 +229,6 @@ UserRouter.post("/login", async (req, res) => {
   }
 });
 
-
-
 UserRouter.patch("/editUser/:id", async (req, res) => {
   try {
     const currUser = await UserModel.findByIdAndUpdate(req.params.id, {
@@ -246,6 +237,87 @@ UserRouter.patch("/editUser/:id", async (req, res) => {
     res.status(200).send({
       msg: "User Updated Successfully",
       user: currUser,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+UserRouter.patch("/editfullname/:id", async (req, res) => {
+  try {
+    const { fullName } = req.body;
+
+    if (!fullName) {
+      return res.status(400).send({ msg: "Fullname is required" });
+    }
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      req.params.id,
+      { fullName },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send({ msg: "User not found" });
+    }
+
+    res.status(200).send({
+      msg: "User Updated Successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+UserRouter.patch("/editemail/:id", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).send({ msg: "Email is required" });
+    }
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      req.params.id,
+      { email },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send({ msg: "User not found" });
+    }
+
+    res.status(200).send({
+      msg: "User Updated Successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+UserRouter.patch("/editphoneno/:id", async (req, res) => {
+  try {
+    const { phonenumber } = req.body;
+
+    if (!phonenumber) {
+      return res.status(400).send({ msg: "Phone Number is required" });
+    }
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      req.params.id,
+      { phonenumber },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send({ msg: "User not found" });
+    }
+
+    res.status(200).send({
+      msg: "User Updated Successfully",
+      user: updatedUser,
     });
   } catch (error) {
     console.log(error);

@@ -9,7 +9,6 @@ require("dotenv").config();
 const Cartrouter = express.Router();
 
 Cartrouter.get("/get", async (req, res) => {
-  // const { owner } = req.params;
   const {owner} =req.body;
   try {
     const data = await Cart_model.find({ owner });
@@ -95,6 +94,34 @@ Cartrouter.delete("/delete/:productId", async (req, res) => {
     });
   }
 });
+
+
+Cartrouter.delete("/deletecart/:cartId", async (req, res) => {
+  const { cartId } = req.params;
+
+  try {
+    // Find the cart by ID and delete it
+    const cartDocument = await Cart_model.findByIdAndDelete({_id:cartId});
+    console.log(cartDocument)
+    if (!cartDocument) {
+      return res.status(404).send({
+        status: false,
+        type: "NOT_FOUND",
+        error: "Cart not found.",
+      });
+    }
+
+    return res.status(200).send({ status: true, message: "Cart deleted successfully.", cart: cartDocument });
+  } catch (error) {
+    return res.status(500).send({
+      status: false,
+      type: "SERVER_ERROR",
+      error: error.message,
+    });
+  }
+});
+
+
 
 module.exports = {
   Cartrouter,

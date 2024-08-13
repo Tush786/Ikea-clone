@@ -11,6 +11,7 @@ const { Forgetpassrouter } = require("./routerLinks/Forgetpassword");
 const { Cartrouter } = require("./routerLinks/Cartrouter");
 const { Addressroute } = require("./routerLinks/address.route");
 const cors = require("cors");
+const { OrderRoute } = require("./routerLinks/order.route");
 
 
 require("dotenv").config();
@@ -22,12 +23,12 @@ app.use(
   );
 
 app.use(express.json());
-
 app.use("/productsapi", productRouter)
 app.use("/user", UserRouter)
 app.use('/cart',Authentication,Cartrouter)
 app.use('/pass',Forgetpassrouter)
 app.use('/address',Authentication,Addressroute)
+app.use('/order',Authentication,OrderRoute)
 
 app.listen(process.env.PORT, async () => {
     try {
