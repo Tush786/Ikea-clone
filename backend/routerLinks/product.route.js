@@ -109,9 +109,14 @@ productRouter.get("/products", async (req, res) => {
     const { searchParam, category, rating, price, page = 1, limit = 6 } = req.query;
 
     const filterobj = {};
+
     if (searchParam) {
-      filterobj["productName"] = { $regex: new RegExp("^" + searchParam, 'i') };
+      filterobj["$or"] = [
+        { productName: { $regex: new RegExp("^" + searchParam, 'i') } },
+        { description: { $regex: new RegExp(searchParam, 'i') } }
+      ];
     }
+
     if (category) {
       filterobj["category_id"] = category;
     }
@@ -126,11 +131,6 @@ productRouter.get("/products", async (req, res) => {
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Logging the filter and sort objects for debugging
-    console.log("Filter Object:", filterobj);
-    console.log("Sort Object:", sortObj);
-
-    // Build the aggregation pipeline
     const pipeline = [
       { $match: filterobj },
       ...(Object.keys(sortObj).length > 0 ? [{ $sort: sortObj }] : []),
