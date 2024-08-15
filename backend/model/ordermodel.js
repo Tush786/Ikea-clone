@@ -59,7 +59,7 @@ const orderSchema = new Schema(
       },
     ],
     totalAmount: {
-      type: String,
+      type: Number,
       required: false,
     },
     shippingAddress: {

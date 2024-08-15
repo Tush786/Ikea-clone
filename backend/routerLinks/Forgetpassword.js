@@ -16,7 +16,6 @@ Forgetpassrouter.post("/forgotPassword", async (req, res) => {
 
   // Check if email exists in the database
   const user = await UserModel.findOne({ email });
-  console.log(user)
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }

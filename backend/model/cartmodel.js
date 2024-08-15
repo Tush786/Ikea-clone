@@ -4,7 +4,7 @@ const cartSchema = mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "userarba",
+    ref: "user",
   },
   orderItems: [
     {

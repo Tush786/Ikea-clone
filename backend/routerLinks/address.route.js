@@ -65,7 +65,7 @@ Addressroute.post("/add", async (req, res) => {
 // Edit Activeaddress route
 Addressroute.put("/activeAddress/:addressId", async (req, res) => {
   const { addressId } = req.params;
-  const { owner} = req.body;
+  const {status, owner} = req.body;
    console.log("line no 69",owner,addressId)
   try {
     await Address_model.updateMany(
@@ -75,7 +75,7 @@ Addressroute.put("/activeAddress/:addressId", async (req, res) => {
 
     const updatedDocument = await Address_model.findOneAndUpdate(
       { owner: owner, "addressItems._id": addressId },
-      { $set: { "addressItems.$.ActiveAddress": true } },
+      { $set: { "addressItems.$.ActiveAddress": status } },
       { new: true }
     );
 

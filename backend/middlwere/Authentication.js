@@ -12,9 +12,7 @@ const Authentication = (req, res, next) => {
       if (err) {
         res.send({ message: "Please Login With Correct Crediential" });
       } else {
-        // console.log(decoded.userId)
         const userId = decoded.userId;
-        // console.log(userId)
         req.body.owner = userId;
         next();
       }

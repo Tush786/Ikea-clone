@@ -12,6 +12,7 @@ const { Cartrouter } = require("./routerLinks/Cartrouter");
 const { Addressroute } = require("./routerLinks/address.route");
 const cors = require("cors");
 const { OrderRoute } = require("./routerLinks/order.route");
+const { PaymentRouter } = require("./routerLinks/OrderConfirmMail");
 
 
 require("dotenv").config();
@@ -29,6 +30,7 @@ app.use('/cart',Authentication,Cartrouter)
 app.use('/pass',Forgetpassrouter)
 app.use('/address',Authentication,Addressroute)
 app.use('/order',Authentication,OrderRoute)
+// app.use('/confirmMail',Authentication,PaymentRouter)
 
 app.listen(process.env.PORT, async () => {
     try {

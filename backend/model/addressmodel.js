@@ -4,7 +4,7 @@ const addressSchema = mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: "userarba",
+        ref: "user",
       },
   addressItems: [
     {
