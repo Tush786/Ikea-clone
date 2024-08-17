@@ -2,7 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 
 const bcrypt = require("bcrypt");
-
+const cookieParser = require('cookie-parser');
 const cors = require("cors");
 const fs = require("fs");
 const { body, validationResult } = require("express-validator");
@@ -169,15 +169,14 @@ UserRouter.post("/signup", upload.single("avatar"), async (req, res) => {
 //   }
 // });
 
+UserRouter.use(cookieParser());
+
 UserRouter.post("/login", async (req, res) => {
   try {
     const { email } = req.body;
-    let user_present = await UserModel.findOne({
-      email,
-    });
+    let user_present = await UserModel.findOne({ email });
 
     if (req.body.gauth) {
-      console.log(req.body);
       if (!user_present) {
         const { fullName, profilePic } = req.body;
         user_present = new UserModel({
@@ -191,10 +190,16 @@ UserRouter.post("/login", async (req, res) => {
 
       const token = jwt.sign(
         { userId: user_present._id },
-        process.env.SECRET_KEY
+        process.env.SECRET_KEY,
+        { expiresIn: '7d' } // Token expiry time
       );
 
-      console.log(token);
+      res.cookie('token', token, {
+        httpOnly: true, // Makes the cookie accessible only by web server
+        secure: process.env.NODE_ENV === 'production', // Send cookie only over HTTPS
+        maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expiry time (7 days)
+      });
+
       res.status(201).send({
         user: user_present,
         token,
@@ -203,7 +208,7 @@ UserRouter.post("/login", async (req, res) => {
     } else {
       if (!user_present) {
         res.status(409).send("Email Does not exist!");
-      } else if (user_present) {
+      } else {
         const hash_pass = await user_present.password;
         const result = bcrypt.compareSync(req.body.password, hash_pass);
 
@@ -212,8 +217,15 @@ UserRouter.post("/login", async (req, res) => {
         } else {
           const token = jwt.sign(
             { userId: user_present._id },
-            process.env.SECRET_KEY
+            process.env.SECRET_KEY,
+            { expiresIn: '7d' }
           );
+
+          res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+          });
 
           res.status(200).send({
             user: user_present,
@@ -227,6 +239,11 @@ UserRouter.post("/login", async (req, res) => {
     console.log(error);
     res.status(500).send("Internal Server Error");
   }
+});
+
+UserRouter.post('/logout', (req, res) => {
+  res.clearCookie('token'); 
+  res.status(200).send({ msg: "Logout successful" });
 });
 
 UserRouter.patch("/editUser/:id", async (req, res) => {

@@ -106,7 +106,7 @@ productRouter.delete("/product/:_id", async (req, res) => {
 
 productRouter.get("/products", async (req, res) => {
   try {
-    const { searchParam, category, rating, price, page = 1, limit = 6 } = req.query;
+    const { searchParam, category, rating, price, page , limit=6 } = req.query;
 
     const filterobj = {};
 

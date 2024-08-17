@@ -23,13 +23,13 @@ OrderRoute.get("/get", async (req, res) => {
 
 // POST request to create an order
 OrderRoute.post('/create', async (req, res) => {
-  const { owner, products, shippingAddress, paymentMethod, notes } = req.body;
+  const { owner, products, shippingAddress,totalAmount, paymentMethod, notes } = req.body;
   try {
     // Calculate total amount
-    const totalAmount = products.reduce(
-      (total, product) => total + product.price * product.quantity,
-      0
-    );
+    // const totalAmount = products.reduce(
+    //   (total, product) => total + product.price * product.quantity,
+    //   0
+    // );
     // Create a new order
     const newOrder = new Order_model({
       owner,
@@ -75,9 +75,9 @@ OrderRoute.put('/update-status/:orderId', async (req, res) => {
   }
 });
 
-OrderRoute.post("/paymentSuccess/:owner", async (req, res) => {
-  const { owner } = req.params;
-  ;
+OrderRoute.post('/paymentSuccess', async (req, res) => {
+  const { owner } = req.body;
+  console.log("Owner ID",owner,"line no 80")
   try {
     const orders = await Order_model.find({ owner });
     // Ensure there are orders and get the last order
