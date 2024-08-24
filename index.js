@@ -30,7 +30,7 @@ app.use('/address', Authentication, Addressroute);
 app.use('/order', Authentication, OrderRoute);
 
 // Setting up the server port
-const PORT = process.env.PORT || 9090;
+const PORT = process.env.PORT || 9111;
 
 app.listen(PORT, async () => {
     try {
