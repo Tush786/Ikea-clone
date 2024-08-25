@@ -8,6 +8,7 @@ const { Cartrouter } = require("./backend/routerLinks/Cartrouter");
 const { Addressroute } = require("./backend/routerLinks/address.route");
 const cors = require("cors");
 const { OrderRoute } = require("./backend/routerLinks/order.route");
+const { OrderConfirm } = require("./backend/routerLinks/orderConfirm");
 
 require("dotenv").config();
 
@@ -28,14 +29,13 @@ app.use('/cart', Authentication, Cartrouter);
 app.use('/pass', Forgetpassrouter);
 app.use('/address', Authentication, Addressroute);
 app.use('/order', Authentication, OrderRoute);
+app.use('/orderConfirm', OrderConfirm);
 
 // Setting up the server port
 const PORT = process.env.PORT || 9111;
 
 app.listen(PORT, async () => {
     try {
-        // Ensure your connection function is properly set up
-        await connection; // if connection is a promise, otherwise remove `await`
         console.log("Database connection successful");
     } catch (err) {
         console.error("Failed to connect to the database:", err);

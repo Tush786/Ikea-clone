@@ -75,8 +75,8 @@ OrderRoute.put('/update-status/:orderId', async (req, res) => {
   }
 });
 
-OrderRoute.post('/paymentSuccess', async (req, res) => {
-  const { owner } = req.body;
+OrderRoute.post('/paymentSuccess/:owner', async (req, res) => {
+  const { owner } = req.params;
   console.log("Owner ID",owner,"line no 80")
   try {
     const orders = await Order_model.find({ owner });
@@ -84,7 +84,6 @@ OrderRoute.post('/paymentSuccess', async (req, res) => {
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "Order not found" });
     }
-    
     const lastOrder = orders[orders.length - 1];
     const user = await UserModel.findById(owner);
     console.log(user)

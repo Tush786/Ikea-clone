@@ -3,6 +3,7 @@ require("dotenv").config();
 
 const Authentication = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
+  console.log(req.headers)
   if (!token) {
     res.status(400).send("Please Login");
   } else {
